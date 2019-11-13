@@ -487,9 +487,9 @@ func (l *ElasticBulkLoad) processBatches(w *HTTPWriter, workersGroup *sync.WaitG
 			_, err = w.WriteLineProtocol(batch.Bytes(), false)
 		}
 
-		if continueTest == false {
-			if err != nil {
-				rerr = fmt.Errorf("Error writing: %s\n", err.Error())
+		if err != nil {
+			rerr = fmt.Errorf("Error writing: %s\n", err.Error())
+			if continueTest == false {
 				break
 			}
 		}
