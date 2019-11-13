@@ -206,6 +206,7 @@ type ElasticBulkLoad struct {
 	valuesRead   int64
 	itemsRead    int64
 	bytesRead    int64
+	continueTest bool
 }
 
 var load = &ElasticBulkLoad{}
@@ -236,6 +237,8 @@ func (l *ElasticBulkLoad) Init() {
 
 	flag.UintVar(&l.numberOfReplicas, "number-of-replicas", 0, "Number of ES replicas (note: replicas == replication_factor - 1). Zero replicas means RF of 1.")
 	flag.UintVar(&l.numberOfShards, "number-of-shards", 1, "Number of ES shards. Typically you will set this to the number of nodes in the cluster.")
+
+	flag.BoolVar(&l.continueTest, "continue-test", false, "when error, Whether continue test")
 
 }
 
@@ -337,7 +340,7 @@ func (l *ElasticBulkLoad) RunProcess(i int, waitGroup *sync.WaitGroup, telemetry
 	cfg := HTTPWriterConfig{
 		Host: daemonUrl,
 	}
-	return l.processBatches(NewHTTPWriter(cfg, l.refreshEachBatch), waitGroup, telemetryPoints, fmt.Sprintf("%d", i))
+	return l.processBatches(NewHTTPWriter(cfg, l.refreshEachBatch), waitGroup, telemetryPoints, fmt.Sprintf("%d", i), l.continueTest)
 }
 
 func (l *ElasticBulkLoad) AfterRunProcess(i int) {
@@ -458,7 +461,7 @@ outer:
 }
 
 // processBatches reads byte buffers from batchChan and writes them to the target server, while tracking stats on the write.
-func (l *ElasticBulkLoad) processBatches(w *HTTPWriter, workersGroup *sync.WaitGroup, telemetrySink chan *report.Point, telemetryWorkerLabel string) error {
+func (l *ElasticBulkLoad) processBatches(w *HTTPWriter, workersGroup *sync.WaitGroup, telemetrySink chan *report.Point, telemetryWorkerLabel string, continueTest bool) error {
 	var batchesSeen int64
 	var rerr error
 	for batch := range l.batchChan {
@@ -484,9 +487,11 @@ func (l *ElasticBulkLoad) processBatches(w *HTTPWriter, workersGroup *sync.WaitG
 			_, err = w.WriteLineProtocol(batch.Bytes(), false)
 		}
 
-		if err != nil {
-			rerr = fmt.Errorf("Error writing: %s\n", err.Error())
-			break
+		if continueTest == false {
+			if err != nil {
+				rerr = fmt.Errorf("Error writing: %s\n", err.Error())
+				break
+			}
 		}
 
 		// Return the batch buffer to the pool.
