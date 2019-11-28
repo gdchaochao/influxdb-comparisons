@@ -96,10 +96,12 @@ func (d *ElasticSearchDevops) maxCPUUsageHourByMinuteNHosts(qi bulkQuerygen.Quer
 	body := new(bytes.Buffer)
 	mustExecuteTemplate(hostsQuery, body, HostsQueryParams{
 		JSONEncodedHostnames: combinedHostnameClause,
-		Start:                interval.StartString(),
-		End:                  interval.EndString(),
-		Bucket:               "1m",
-		Field:                "usage_user",
+		//Start:                interval.StartString(),
+		//End:                  interval.EndString(),
+		Start:  interval.StartUnixNano(),
+		End:    interval.EndUnixNano(),
+		Bucket: "1m",
+		Field:  "usage_user",
 	})
 
 	humanLabel := []byte(fmt.Sprintf("Elastic max cpu, rand %4d hosts, rand %s by 1m", nhosts, timeRange))
@@ -121,8 +123,10 @@ func (d *ElasticSearchDevops) MeanCPUUsageDayByHourAllHostsGroupbyHost(qi bulkQu
 
 	body := new(bytes.Buffer)
 	mustExecuteTemplate(fleetGroupByHostnameQuery, body, FleetQueryParams{
-		Start:         interval.StartString(),
-		End:           interval.EndString(),
+		//Start:         interval.StartString(),
+		//End:           interval.EndString(),
+		Start:         interval.StartUnixNano(),
+		End:           interval.EndUnixNano(),
 		Bucket:        "1h",
 		Field:         "usage_user",
 		HostnameCount: d.ScaleVar,
@@ -146,13 +150,17 @@ func mustExecuteTemplate(t *template.Template, w io.Writer, params interface{}) 
 }
 
 type FleetQueryParams struct {
-	Bucket, Start, End, Field string
-	HostnameCount             int
+	//Bucket, Start, End, Field string
+	Bucket, Field string
+	Start, End    int64
+	HostnameCount int
 }
 
 type HostsQueryParams struct {
-	JSONEncodedHostnames      string
-	Bucket, Start, End, Field string
+	JSONEncodedHostnames string
+	//Bucket, Start, End, Field string
+	Bucket, Field string
+	Start, End    int64
 }
 
 const rawFleetQuery = `
