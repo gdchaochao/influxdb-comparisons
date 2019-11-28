@@ -171,8 +171,8 @@ const rawFleetQuery = `
       "filter": {
         "range": {
           "timestamp": {
-            "gte": "{{.Start}}",
-            "lt": "{{.End}}"
+            "gte": {{.Start}},
+            "lt": {{.End}}
           }
         }
       },
@@ -205,8 +205,8 @@ const rawFleetGroupByHostnameQuery = `
       "filter": {
         "range": {
           "timestamp": {
-            "gte": "{{.Start}}",
-            "lt": "{{.End}}"
+            "gte": {{.Start}},
+            "lt": {{.End}}
           }
         }
       },
@@ -249,8 +249,8 @@ const rawHostsQuery = `
           "filter":{
             "range":{
               "timestamp":{
-                "gte":"{{.Start}}",
-                "lt":"{{.End}}"
+                "gte":{{.Start}},
+                "lt":{{.End}}
               }
             }
           },
