@@ -164,9 +164,7 @@ const rawFleetQuery = `
         "range": {
           "timestamp": {
             "gte": "{{.Start}}",
-            "lt": "{{.End}}",
-			"format":"yyyy-MM-dd HH:mm:ss",
-			"time_zone":"+08:00"
+            "lt": "{{.End}}"
           }
         }
       },
@@ -200,9 +198,7 @@ const rawFleetGroupByHostnameQuery = `
         "range": {
           "timestamp": {
             "gte": "{{.Start}}",
-            "lt": "{{.End}}",
-			"format":"yyyy-MM-dd HH:mm:ss",
-			"time_zone":"+08:00"
+            "lt": "{{.End}}"
           }
         }
       },
@@ -246,9 +242,7 @@ const rawHostsQuery = `
             "range":{
               "timestamp":{
                 "gte":"{{.Start}}",
-                "lt":"{{.End}}",
-				"format":"yyyy-MM-dd HH:mm:ss",
-				"time_zone":"+08:00"
+                "lt":"{{.End}}"
               }
             }
           },
