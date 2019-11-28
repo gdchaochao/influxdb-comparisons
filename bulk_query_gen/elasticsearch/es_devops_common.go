@@ -98,8 +98,8 @@ func (d *ElasticSearchDevops) maxCPUUsageHourByMinuteNHosts(qi bulkQuerygen.Quer
 		JSONEncodedHostnames: combinedHostnameClause,
 		//Start:                interval.StartString(),
 		//End:                  interval.EndString(),
-		Start:  interval.StartUnixNano(),
-		End:    interval.EndUnixNano(),
+		Start:  interval.StartUnixNano() / 1000000,
+		End:    interval.EndUnixNano() / 1000000,
 		Bucket: "1m",
 		Field:  "usage_user",
 	})
@@ -125,8 +125,8 @@ func (d *ElasticSearchDevops) MeanCPUUsageDayByHourAllHostsGroupbyHost(qi bulkQu
 	mustExecuteTemplate(fleetGroupByHostnameQuery, body, FleetQueryParams{
 		//Start:         interval.StartString(),
 		//End:           interval.EndString(),
-		Start:         interval.StartUnixNano(),
-		End:           interval.EndUnixNano(),
+		Start:         interval.StartUnixNano() / 1000000,
+		End:           interval.EndUnixNano() / 1000000,
 		Bucket:        "1h",
 		Field:         "usage_user",
 		HostnameCount: d.ScaleVar,
